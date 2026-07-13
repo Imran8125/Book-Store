@@ -1,0 +1,220 @@
+/* Midnight Library Premium Design System & UI styling */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  --font-outfit: 'Outfit', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at 50% 50%, #1a1311 0%, #0c0908 100%);
+  color: #f5efe4;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar in Warm Mahogany */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0c0908;
+}
+::-webkit-scrollbar-thumb {
+  background: #342724;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4a3834;
+}
+
+/* Midnight Library Panel Styles */
+.glass-panel {
+  background: rgba(33, 24, 22, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.5);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 12px 40px 0 rgba(212, 175, 55, 0.12);
+}
+
+/* Gilded Input Fields */
+.glass-input {
+  background: rgba(21, 15, 13, 0.8) !important;
+  border: 1px solid rgba(212, 175, 55, 0.15) !important;
+  color: #f5efe4 !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  transition: all 0.25s ease !important;
+}
+
+.glass-input:focus {
+  outline: none !important;
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15) !important;
+  background: rgba(21, 15, 13, 0.95) !important;
+}
+
+/* Gilded Gold Foil Buttons */
+.glass-button {
+  background: linear-gradient(135deg, #d4af37 0%, #aa8417 100%);
+  color: #1a1311;
+  border: none;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 10px 24px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px 0 rgba(212, 175, 55, 0.2);
+  cursor: pointer;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(212, 175, 55, 0.35);
+  background: linear-gradient(135deg, #e5c048 0%, #bb9522 100%);
+  color: #1a1311;
+}
+
+.glass-button-secondary {
+  background: rgba(212, 175, 55, 0.05);
+  color: #f5efe4;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 24px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.glass-button-secondary:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: rgba(212, 175, 55, 0.4);
+  color: #ffffff;
+}
+
+.glass-button-danger {
+  background: linear-gradient(135deg, #b24a3c 0%, #8d3429 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 24px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px 0 rgba(178, 74, 60, 0.3);
+  cursor: pointer;
+}
+
+.glass-button-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(178, 74, 60, 0.45);
+  background: linear-gradient(135deg, #c35b4c 0%, #9e4337 100%);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+/* Custom Grid System for Book Cards */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 1.5rem 0;
+}
+
+/* Gold Foil Text Gradients */
+.text-gradient {
+  background: linear-gradient(135deg, #d4af37 0%, #f3d67f 50%, #f5efe4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Bootstrap Style Overrides for Midnight Library theme */
+.navbar {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1) !important;
+  background: rgba(21, 15, 13, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  padding: 1rem 0 !important;
+}
+
+.card {
+  background: rgba(33, 24, 22, 0.65) !important;
+  border: 1px solid rgba(212, 175, 55, 0.12) !important;
+  border-radius: 16px !important;
+  color: #f5efe4 !important;
+  overflow: hidden;
+  transition: all 0.3s ease !important;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.12) !important;
+}
+
+/* Table overrides */
+.table-dark {
+  --bs-table-bg: rgba(21, 15, 13, 0.4) !important;
+  --bs-table-border-color: rgba(212, 175, 55, 0.08) !important;
+}
+
+/* Modal styling */
+.modal-content {
+  background-color: #1a1311 !important;
+  border: 1px solid rgba(212, 175, 55, 0.15) !important;
+  color: #f5efe4 !important;
+}
+
+/* Wishlist heart animate */
+.wishlist-btn {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.wishlist-btn:active {
+  transform: scale(0.85);
+}
+
+/* Title Font settings */
+h1, h2, h3, .font-serif-display {
+  font-family: var(--font-serif) !important;
+  font-weight: 600 !important;
+}
