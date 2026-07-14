@@ -8,6 +8,7 @@ const orderSchema = new mongoose.Schema({
     totalamount: String,
     seller: String,
     sellerId: String,
+    bookId: String,
     booktitle: String,
     bookauthor: String,
     bookgenre: String,
@@ -18,6 +19,19 @@ const orderSchema = new mongoose.Schema({
         ref: 'User' 
     },
     userName: String,
+    status: {
+        type: String,
+        enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+        default: 'Pending'
+    },
+    quantity: {
+        type: Number,
+        default: 1
+    },
+    format: {
+        type: String,
+        default: 'Paperback'
+    },
     BookingDate: {
         type: String, // Store dates as strings
         default: () => new Date().toLocaleDateString('hi-IN')

@@ -1,142 +1,249 @@
 import React from 'react';
 import Unavbar from './Unavbar';
-import { Card, Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
-import { FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
+import {
+  FiArrowRight, FiBookOpen, FiAward, FiFeather,
+  FiTrendingUp, FiMoreHorizontal, FiMail
+} from 'react-icons/fi';
 
+/* ── static data ────────────────────────────────────────── */
+const HERO_BOOK = {
+  title: 'The Echoes of Ancient Silences',
+  badge: 'Selection of the Month',
+  quote: '"A masterful journey through the forgotten corridors of history, where the weight of time meets the fragility of memory." — The Literary Gazette',
+  price: '$24.99',
+  img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602190134i/55301718.jpg',
+};
+
+const NEW_ARRIVALS = [
+  { title: 'Rich Dad Poor Dad',     author: 'Robert Kiyosaki', price: '$16.00', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524451661i/39924789.jpg' },
+  { title: 'Think and Grow Rich',   author: 'Napoleon Hill',   price: '$22.50', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1463241782i/30186948.jpg' },
+  { title: 'Harry Potter',          author: 'J.K. Rowling',    price: '$34.00', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1663805647i/136251.jpg' },
+  { title: "Don't Let Her Stay",    author: 'R. Greenfield',   price: '$15.99', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1674147285i/80830635.jpg' },
+  { title: 'Killing the Witches',   author: 'B. O\'Reilly',    price: '$45.00', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1675642559i/65214203.jpg' },
+];
+
+const GENRES = [
+  { label: 'Fiction',     icon: FiBookOpen   },
+  { label: 'History',     icon: FiFeather    },
+  { label: 'Science',     icon: FiAward      },
+  { label: 'Kids',        icon: FiTrendingUp },
+  { label: 'Philosophy',  icon: FiBookOpen   },
+  { label: 'All Genres',  icon: FiMoreHorizontal },
+];
+
+const BEST_SELLERS = [
+  { rank: '01', title: 'The Cost of Legacy',  author: 'Julian Vance',    price: '$21.99', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544102229i/42983957.jpg' },
+  { rank: '02', title: 'Urban Solitude',       author: 'Mia Chen',       price: '$19.50', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1347493537i/1979210.jpg' },
+  { rank: '03', title: 'Mars Station Delta',   author: 'Commander K. West', price: '$26.00', img: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544102229i/42983957.jpg' },
+];
+
+/* ── component ──────────────────────────────────────────── */
 const Uhome = () => {
-  const bestSellers = [
-    {
-      title: "RICH DAD POOR DAD",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524451661i/39924789.jpg"
-    },
-    {
-      title: "THINK AND GROW RICH",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1463241782i/30186948.jpg"
-    },
-    {
-      title: "DON'T LET HER STAY",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1674147285i/80830635.jpg"
-    },
-    {
-      title: "KILLING THE WITCHES",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1675642559i/65214203.jpg"
-    }
-  ];
-
-  const recommendations = [
-    {
-      title: "HARRY POTTER",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1663805647i/136251.jpg"
-    },
-    {
-      title: "ELON MUSK",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1692288251i/122765395.jpg"
-    },
-    {
-      title: "THE MOSQUITO",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544102229i/42983957.jpg"
-    },
-    {
-      title: "JOURNEY ON THE JAMES",
-      img: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1347493537i/1979210.jpg"
-    }
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#130f0e] text-[#f5efe4]">
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Unavbar />
-      
-      {/* Decorative glows */}
-      <div className="absolute top-48 left-10 w-96 h-96 bg-[#d4af37]/3 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute top-96 right-10 w-[400px] h-[400px] bg-[#b24a3c]/3 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <Container className="py-12 flex-1 relative z-10">
-        
-        {/* Welcome Section */}
-        <div className="mb-16 text-center lg:text-left animate-fade-in-up">
-          <h2 className="text-4xl font-extrabold font-serif text-white tracking-tight">
-            Discover Your Next <span className="text-gradient">Masterpiece</span>
+      {/* ── Hero / Featured Book ───────────────────────── */}
+      <section style={{
+        background: 'var(--color-surface-low)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: '40px 32px',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 40, alignItems: 'center' }}>
+          <div style={{ flex: 1 }}>
+            <span style={{
+              display: 'inline-block',
+              background: 'var(--color-primary)',
+              color: '#fff',
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              padding: '4px 12px',
+              borderRadius: 999,
+              marginBottom: 16,
+            }}>{HERO_BOOK.badge}</span>
+
+            <h1 style={{ fontSize: 'clamp(26px, 4vw, 38px)', marginBottom: 14, lineHeight: 1.15 }}>
+              {HERO_BOOK.title}
+            </h1>
+            <p style={{ fontSize: 13.5, color: 'var(--color-text-muted)', fontStyle: 'italic', lineHeight: 1.65, marginBottom: 24, maxWidth: 440 }}>
+              {HERO_BOOK.quote}
+            </p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Link to="/uproducts" className="be-btn be-btn-primary" style={{ textDecoration: 'none', gap: 8 }}>
+                <FiBookOpen size={14} /> Add to Collection — {HERO_BOOK.price}
+              </Link>
+              <Link to="/uproducts" className="be-btn be-btn-outline" style={{ textDecoration: 'none' }}>
+                Read Sample
+              </Link>
+            </div>
+          </div>
+          <div style={{
+            width: 200, flexShrink: 0,
+            borderRadius: 8, overflow: 'hidden',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+          }}>
+            <img src={HERO_BOOK.img} alt={HERO_BOOK.title} style={{ width: '100%', display: 'block' }} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── New Arrivals ────────────────────────────────── */}
+      <section style={{ padding: '44px 32px 32px', maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+          <h2 className="be-section-title" style={{ margin: 0 }}>New Arrivals</h2>
+          <Link to="/uproducts" className="be-section-link" style={{ textDecoration: 'none' }}>
+            View Full Catalog <FiArrowRight size={13} />
+          </Link>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: 16,
+        }}>
+          {NEW_ARRIVALS.map((book, i) => (
+            <Link to="/uproducts" key={i} style={{ textDecoration: 'none' }}>
+              <div className="be-book-card">
+                <div className="be-book-cover" style={{ aspectRatio: '2/3' }}>
+                  <img src={book.img} alt={book.title} />
+                </div>
+                <div className="be-book-info">
+                  <p className="be-book-title">{book.title}</p>
+                  <p className="be-book-author">{book.author}</p>
+                  <p className="be-book-price">{book.price}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Explore Your Interests ──────────────────────── */}
+      <section style={{
+        background: 'var(--color-surface-low)',
+        borderTop: '1px solid var(--color-border)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: '44px 32px',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 26, color: 'var(--color-primary)', marginBottom: 8 }}>
+            Explore Your Interests
           </h2>
-          <p className="text-[#a69a8b] mt-2 max-w-xl">
-            Browse our top-selling books and recommendations carefully selected for you.
+          <p style={{ color: 'var(--color-text-muted)', fontSize: 14, marginBottom: 32 }}>
+            Curated collections to help you find the next story that resonates with your journey.
           </p>
-        </div>
 
-        {/* Best Sellers Section */}
-        <div className="mb-16 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-[#d4af37]/10 flex items-center justify-center border border-[#d4af37]/20">
-              <FiTrendingUp className="text-[#d4af37] text-lg" />
-            </div>
-            <h3 className="text-2xl font-bold font-serif text-white tracking-tight m-0">Best Sellers</h3>
-          </div>
-          
-          <Row xs={1} sm={2} md={4} className="g-4">
-            {bestSellers.map((book, idx) => (
-              <Col key={idx}>
-                <Link to="/uproducts" className="no-underline">
-                  <Card className="h-full glass-panel glass-card-hover group border border-[#342724] bg-[#211816]/30 overflow-hidden">
-                    <div className="aspect-[2/3] overflow-hidden bg-[#0c0908] relative">
-                      <Card.Img 
-                        variant="top" 
-                        src={book.img} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0908]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <span className="text-xs font-semibold px-2.5 py-1 bg-[#d4af37] text-[#1a1311] rounded-full">View Details</span>
-                      </div>
-                    </div>
-                    <Card.Body className="p-4 flex flex-col justify-between">
-                      <Card.Title className="text-base font-bold font-serif text-white group-hover:text-[#d4af37] transition-colors text-center line-clamp-2">
-                        {book.title}
-                      </Card.Title>
-                    </Card.Body>
-                  </Card>
-                </Link>
-              </Col>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 20,
+            flexWrap: 'wrap',
+          }}>
+            {GENRES.map(({ label, icon: Icon }, i) => (
+              <Link to="/uproducts" key={i} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 12, padding: '16px 20px',
+                  width: 90, cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <Icon size={22} color="var(--color-text-sub)" />
+                  <span style={{ fontSize: 12, color: 'var(--color-text-sub)', fontWeight: 500 }}>{label}</span>
+                </div>
+              </Link>
             ))}
-          </Row>
-        </div>
-
-        {/* Top Recommendation Section */}
-        <div className="mb-16 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-[#aa8417]/10 flex items-center justify-center border border-[#aa8417]/20">
-              <FiCheckCircle className="text-[#c5a880] text-lg" />
-            </div>
-            <h3 className="text-2xl font-bold font-serif text-white tracking-tight m-0">Top Recommendations</h3>
           </div>
-          
-          <Row xs={1} sm={2} md={4} className="g-4">
-            {recommendations.map((book, idx) => (
-              <Col key={idx}>
-                <Link to="/uproducts" className="no-underline">
-                  <Card className="h-full glass-panel glass-card-hover group border border-[#342724] bg-[#211816]/30 overflow-hidden">
-                    <div className="aspect-[2/3] overflow-hidden bg-[#0c0908] relative">
-                      <Card.Img 
-                        variant="top" 
-                        src={book.img} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0908]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <span className="text-xs font-semibold px-2.5 py-1 bg-[#c5a880] text-[#1a1311] rounded-full">View Details</span>
-                      </div>
-                    </div>
-                    <Card.Body className="p-4 flex flex-col justify-between">
-                      <Card.Title className="text-base font-bold font-serif text-white group-hover:text-[#c5a880] transition-colors text-center line-clamp-2">
-                        {book.title}
-                      </Card.Title>
-                    </Card.Body>
-                  </Card>
-                </Link>
-              </Col>
+        </div>
+      </section>
+
+      {/* ── Best Sellers ────────────────────────────────── */}
+      <section style={{ padding: '44px 32px', maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+          <h2 className="be-section-title" style={{ margin: 0 }}>Best Sellers</h2>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {['This Week', 'This Month'].map((t, i) => (
+              <button key={t} className={i === 0 ? 'be-btn be-btn-outline' : 'be-btn be-btn-ghost'}
+                style={{ fontSize: 12, padding: '6px 14px' }}>
+                {t}
+              </button>
             ))}
-          </Row>
+          </div>
         </div>
 
-      </Container>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          {BEST_SELLERS.map((book, i) => (
+            <Link to="/uproducts" key={i} style={{ textDecoration: 'none' }}>
+              <div className="be-card" style={{ display: 'flex', gap: 14, padding: 16, alignItems: 'center' }}>
+                <span style={{
+                  fontSize: 22, fontWeight: 800, color: 'var(--color-border)',
+                  fontFamily: 'var(--font-serif)', minWidth: 32,
+                }}>{book.rank}</span>
+                <div style={{
+                  width: 50, height: 68, borderRadius: 6, overflow: 'hidden', flexShrink: 0,
+                  background: 'var(--color-surface-low)',
+                }}>
+                  <img src={book.img} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: 14, color: 'var(--color-primary)', marginBottom: 2 }}>{book.title}</p>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 4 }}>{book.author}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-accent)' }}>{book.price}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Newsletter CTA ──────────────────────────────── */}
+      <section style={{
+        background: 'var(--color-primary)',
+        padding: '44px 32px',
+        margin: '0 0 0',
+      }}>
+        <div style={{ maxWidth: 580, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{
+            fontFamily: 'var(--font-serif)', fontSize: 26,
+            color: '#ffffff', marginBottom: 10,
+          }}>Join the Literary Circle</h2>
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, marginBottom: 28 }}>
+            Subscribe to receive curated reading lists, exclusive author interviews, and early access to our rare book auctions.
+          </p>
+          <div style={{ display: 'flex', gap: 10, maxWidth: 420, margin: '0 auto' }}>
+            <input
+              type="email"
+              placeholder="Your email address"
+              className="be-input"
+              style={{
+                flex: 1,
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#ffffff',
+                borderRadius: 6,
+              }}
+            />
+            <button className="be-btn be-btn-primary" style={{ flexShrink: 0, gap: 6 }}>
+              <FiMail size={13} /> Join Now
+            </button>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );

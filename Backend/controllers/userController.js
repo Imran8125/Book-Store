@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Book = require('../models/Book');
 const Order = require('../models/Order');
 const Wishlist = require('../models/Wishlist');
+const Interaction = require('../models/Interaction');
 
 // User Login
 exports.login = async (req, res) => {
@@ -44,8 +45,26 @@ exports.signup = async (req, res) => {
 // Get All Items (Books)
 exports.getItems = async (req, res) => {
     try {
-        const items = await Book.find();
-        return res.json(items);
+        const items = await Book.find().lean();
+        const interactions = await Interaction.find();
+        const orders = await Order.find();
+
+        const itemsWithMetrics = items.map(book => {
+            const bookInteractions = interactions.filter(i => i.bookId.toString() === book._id.toString());
+            const ratings = bookInteractions.map(i => i.rating).filter(r => r !== undefined);
+            const avgRating = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length) : 0;
+
+            const bookOrders = orders.filter(o => o.bookId === book._id.toString() || o.booktitle === book.title);
+            const salesCount = bookOrders.reduce((acc, order) => acc + (order.quantity || 1), 0);
+
+            return {
+                ...book,
+                avgRating,
+                salesCount
+            };
+        });
+
+        return res.json(itemsWithMetrics);
     } catch (error) {
         console.error(error);
         return res.status(500).send('Server Error');
@@ -76,6 +95,7 @@ exports.placeOrder = async (req, res) => {
         totalamount, 
         seller, 
         sellerId, 
+        bookId,
         BookingDate, 
         description, 
         Delivery, 
@@ -84,7 +104,9 @@ exports.placeOrder = async (req, res) => {
         booktitle, 
         bookauthor, 
         bookgenre, 
-        itemImage 
+        itemImage,
+        quantity,
+        format
     } = req.body;
 
     try {
@@ -96,6 +118,7 @@ exports.placeOrder = async (req, res) => {
             totalamount, 
             seller, 
             sellerId, 
+            bookId,
             BookingDate, 
             description, 
             userId, 
@@ -104,9 +127,19 @@ exports.placeOrder = async (req, res) => {
             booktitle, 
             bookauthor, 
             bookgenre, 
-            itemImage 
+            itemImage,
+            quantity: quantity ? parseInt(quantity, 10) : 1,
+            format: format || 'Paperback'
         });
         await order.save();
+
+        // Decrement book stock level
+        if (bookId) {
+            await Book.findByIdAndUpdate(bookId, { 
+                $inc: { stock: -(quantity ? parseInt(quantity, 10) : 1) } 
+            });
+        }
+
         return res.status(201).json(order);
     } catch (err) {
         return res.status(400).json({ error: 'Failed to create order' });
@@ -182,5 +215,71 @@ exports.removeFromWishlist = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).send('Server Error');
+    }
+};
+
+// Update User Profile
+exports.updateProfile = async (req, res) => {
+    const { userId } = req.params;
+    const { name, email, password } = req.body;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        if (name) user.name = name;
+        if (email) {
+            const existing = await User.findOne({ email });
+            if (existing && existing._id.toString() !== userId) {
+                return res.status(400).json({ error: 'Email already in use' });
+            }
+            user.email = email;
+        }
+        if (password) user.password = password;
+        await user.save();
+        return res.json({
+            Status: "Success",
+            user: { id: user.id, name: user.name, email: user.email }
+        });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+// Submit or Update Review, Rating, Reading Progress
+exports.createOrUpdateInteraction = async (req, res) => {
+    const { userId, userName, bookId, rating, reviewText, readingProgress } = req.body;
+    try {
+        let interaction = await Interaction.findOne({ userId, bookId });
+        if (interaction) {
+            if (rating !== undefined) interaction.rating = rating;
+            if (reviewText !== undefined) interaction.reviewText = reviewText;
+            if (readingProgress !== undefined) interaction.readingProgress = readingProgress;
+            await interaction.save();
+        } else {
+            interaction = new Interaction({
+                userId,
+                userName,
+                bookId,
+                rating,
+                reviewText,
+                readingProgress
+            });
+            await interaction.save();
+        }
+        return res.json(interaction);
+    } catch (err) {
+        return res.status(400).json({ error: err.message });
+    }
+};
+
+// Get all interactions for a book
+exports.getBookInteractions = async (req, res) => {
+    const { bookId } = req.params;
+    try {
+        const interactions = await Interaction.find({ bookId }).sort('-createdAt');
+        return res.json(interactions);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
     }
 };

@@ -17,6 +17,10 @@ const SellerSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "vendor"
+    },
+    isApproved: {
+        type: Boolean,
+        default: false
     }
 });
 

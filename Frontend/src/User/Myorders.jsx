@@ -87,14 +87,18 @@ function Myorders() {
                         <h3 className="text-lg font-bold text-white truncate m-0 font-serif">
                           {item.booktitle}
                         </h3>
-                        <Badge bg={status === "Delivered" ? "success" : "warning"} className="text-xs uppercase px-2.5 py-1">
-                          {status === "Delivered" ? <FiCheckCircle className="inline mr-1" /> : <FiTruck className="inline mr-1" />}
-                          {status}
+                        <Badge bg={item.status === "Delivered" ? "success" : item.status === "Shipped" ? "info" : "warning"} className="text-xs uppercase px-2.5 py-1">
+                          {item.status === "Delivered" ? <FiCheckCircle className="inline mr-1" /> : <FiTruck className="inline mr-1" />}
+                          {item.status || "Pending"}
                         </Badge>
                       </div>
                       
                       <p className="text-[#a69a8b] text-xs">
                         Author: <span className="text-[#f5efe4] font-medium">{item.bookauthor || 'N/A'}</span> | Genre: <span className="text-[#d4af37] font-medium uppercase">{item.bookgenre || 'N/A'}</span>
+                      </p>
+
+                      <p className="text-[#a69a8b] text-xs">
+                        Format: <span className="text-[#f5efe4] font-semibold">{item.format || 'Paperback'}</span> | Qty: <span className="text-[#f5efe4] font-semibold">{item.quantity || 1}</span>
                       </p>
                       
                       <p className="text-[#a69a8b] text-[11px] font-mono">

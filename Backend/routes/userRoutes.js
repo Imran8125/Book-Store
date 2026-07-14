@@ -5,10 +5,15 @@ const userController = require('../controllers/userController');
 // Authentication
 router.post('/login', userController.login);
 router.post('/signup', userController.signup);
+router.put('/userprofile/:userId', userController.updateProfile);
 
 // Items (Books)
 router.get('/item', userController.getItems);
 router.get('/item/:id', userController.getItemById);
+
+// Interactions
+router.post('/interaction', userController.createOrUpdateInteraction);
+router.get('/interaction/:bookId', userController.getBookInteractions);
 
 // Orders
 router.post('/userorder', userController.placeOrder);

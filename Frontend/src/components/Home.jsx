@@ -1,118 +1,158 @@
 import React from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
-import { FiBookOpen, FiUser, FiShoppingBag, FiShield } from 'react-icons/fi';
+import {
+  FiBookOpen, FiUser, FiShoppingBag, FiShield, FiSearch, FiChevronRight
+} from 'react-icons/fi';
 
 const Home = () => {
   const location = useLocation();
-  const isRoot = location.pathname === '/';
+  const isRoot   = location.pathname === '/';
 
   return (
-    <div className={`flex flex-col bg-[#130f0e] text-[#f5efe4] ${isRoot ? 'min-h-screen' : ''}`}>
-      {/* Premium Glassmorphic Navbar */}
-      <Navbar expand="lg" className="border-b border-[#342724] bg-[#150f0e]/80 backdrop-blur-md sticky top-0 z-50">
-        <Container>
-          <Navbar.Brand as={Link} to="/" className="flex items-center gap-2 font-serif text-2xl font-bold tracking-tight text-white">
-            <FiBookOpen className="text-[#d4af37] text-3xl animate-pulse" />
-            <span>Book<span className="text-gradient">Haven</span></span>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-[#342724] bg-[#211816]" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto flex gap-4 items-center mt-3 lg:mt-0">
-              <Link 
-                to="/login" 
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all font-medium text-sm font-serif"
-              >
-                <FiUser className="text-[#d4af37]" /> Reader Portal
-              </Link>
-              <Link 
-                to="/slogin" 
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all font-medium text-sm font-serif"
-              >
-                <FiShoppingBag className="text-[#a89b8c]" /> Seller Portal
-              </Link>
-              <Link 
-                to="/alogin" 
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all font-medium text-sm font-serif"
-              >
-                <FiShield className="text-[#c5a880]" /> Admin Portal
-              </Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+    <div style={{ background: 'var(--color-bg)', minHeight: isRoot ? '100vh' : undefined }}>
+      {/* ─── Navbar ─────────────────────────────────────── */}
+      <nav className="be-navbar">
+        <div className="be-navbar-inner">
+          <Link to="/" className="be-navbar-brand" style={{ textDecoration: 'none' }}>
+            <FiBookOpen size={20} />
+            BookEase
+          </Link>
+          <div className="be-navbar-actions" style={{ marginLeft: 'auto' }}>
+            <Link to="/login"  className="be-navbar-link" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FiUser size={14} /> Reader Portal
+            </Link>
+            <Link to="/slogin" className="be-navbar-link" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FiShoppingBag size={14} /> Seller Portal
+            </Link>
+            <Link to="/alogin" className="be-navbar-link" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FiShield size={14} /> Admin Portal
+            </Link>
+          </div>
+        </div>
+      </nav>
 
-      {/* Hero / Portal Selector section only visible at root "/" */}
-      {isRoot ? (
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
-          {/* Radial visual glows in background */}
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#d4af37]/5 rounded-full blur-[120px] pointer-events-none"></div>
-          <div className="absolute bottom-10 left-1/3 w-[300px] h-[300px] bg-[#b24a3c]/5 rounded-full blur-[80px] pointer-events-none"></div>
+      {/* ─── Landing Hero (root only) ────────────────────── */}
+      {isRoot && (
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 32px 48px' }}>
 
-          <div className="text-center max-w-3xl mx-auto mb-16 relative z-10 animate-fade-in-up">
-            <span className="px-3 py-1 text-xs font-semibold tracking-wider text-[#d4af37] uppercase bg-[#d4af37]/10 rounded-full border border-[#d4af37]/20">
-              Welcome to BookHaven
-            </span>
-            <h1 className="text-5xl md:text-6xl font-extrabold font-serif mt-4 tracking-tight leading-tight">
-              Where Every Page is a <span className="text-gradient">New Adventure</span>
+          {/* Hero */}
+          <div className="animate-fade-in-up" style={{ textAlign: 'center', marginBottom: 72 }}>
+            <span style={{
+              display: 'inline-block',
+              background: 'rgba(200,92,60,0.09)',
+              color: 'var(--color-accent)',
+              fontWeight: 600,
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              padding: '5px 14px',
+              borderRadius: 999,
+              marginBottom: 20,
+              border: '1px solid rgba(200,92,60,0.18)',
+            }}>Welcome to BookEase</span>
+
+            <h1 style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(36px, 6vw, 60px)',
+              fontWeight: 800,
+              color: 'var(--color-primary)',
+              lineHeight: 1.15,
+              marginBottom: 20,
+            }}>
+              Curating Literary Journeys<br />
+              <span style={{ color: 'var(--color-accent)' }}>for the Modern Reader</span>
             </h1>
-            <p className="text-[#a69a8b] text-lg md:text-xl mt-6 max-w-2xl mx-auto leading-relaxed">
-              Explore our curated library, purchase your next favorite read, or start selling books to a passionate community of readers today.
+
+            <p style={{
+              fontSize: 17,
+              color: 'var(--color-text-muted)',
+              maxWidth: 560,
+              margin: '0 auto 36px',
+              lineHeight: 1.7,
+            }}>
+              Browse thousands of titles, build your personal library, manage your book store,
+              or oversee the entire platform — all in one place.
             </p>
+
+            <Link to="/login" className="be-btn be-btn-primary" style={{
+              padding: '13px 32px', fontSize: 15, textDecoration: 'none', display: 'inline-flex',
+            }}>
+              Start Reading &nbsp;<FiChevronRight />
+            </Link>
           </div>
 
-          {/* Core Portal Selector Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl w-full mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            {/* User portal card */}
-            <div className="glass-panel glass-card-hover p-8 flex flex-col justify-between group">
-              <div>
-                <div className="w-14 h-14 rounded-2xl bg-[#d4af37]/10 flex items-center justify-center mb-6 border border-[#d4af37]/20 group-hover:scale-110 transition-transform">
-                  <FiUser className="text-[#d4af37] text-2xl" />
-                </div>
-                <h3 className="text-2xl font-bold font-serif mb-3 text-white">Reader Portal</h3>
-                <p className="text-[#a69a8b] text-sm leading-relaxed mb-6">
-                  Browse a massive collection of books across genres, build a custom wishlist, and purchase with immediate tracking.
-                </p>
+          {/* Portal Cards */}
+          <div
+            className="animate-fade-in-up"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 24,
+              animationDelay: '0.1s',
+            }}
+          >
+            {/* Reader */}
+            <div className="be-card" style={{ padding: 28 }}>
+              <div style={{
+                width: 46, height: 46,
+                borderRadius: 10,
+                background: 'rgba(3,22,50,0.07)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: 16,
+              }}>
+                <FiUser size={22} color="var(--color-primary)" />
               </div>
-              <Link to="/login" className="glass-button w-full text-center no-underline">
-                Enter as Reader
-              </Link>
+              <h3 style={{ marginBottom: 8, fontSize: 18 }}>Reader Portal</h3>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: 13.5, lineHeight: 1.6, marginBottom: 20 }}>
+                Browse our curated library, build a wishlist, purchase with order tracking, and manage your reading profile.
+              </p>
+              <Link to="/login" className="be-btn be-btn-primary" style={{
+                width: '100%', textDecoration: 'none', fontSize: 13,
+              }}>Enter as Reader</Link>
             </div>
 
-            {/* Seller portal card */}
-            <div className="glass-panel glass-card-hover p-8 flex flex-col justify-between group">
-              <div>
-                <div className="w-14 h-14 rounded-2xl bg-[#c5a880]/10 flex items-center justify-center mb-6 border border-[#c5a880]/20 group-hover:scale-110 transition-transform">
-                  <FiShoppingBag className="text-[#c5a880] text-2xl" />
-                </div>
-                <h3 className="text-2xl font-bold font-serif mb-3 text-white">Seller Portal</h3>
-                <p className="text-[#a69a8b] text-sm leading-relaxed mb-6">
-                  Manage your inventory, set pricing, upload book details, and track your store orders through a smart dashboard.
-                </p>
+            {/* Seller */}
+            <div className="be-card" style={{ padding: 28 }}>
+              <div style={{
+                width: 46, height: 46,
+                borderRadius: 10,
+                background: 'rgba(200,92,60,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: 16,
+              }}>
+                <FiShoppingBag size={22} color="var(--color-accent)" />
               </div>
-              <Link to="/slogin" className="glass-button w-full text-center no-underline" style={{ backgroundImage: 'linear-gradient(135deg, #aa8417 0%, #7d5e0f 100%)', color: '#f5efe4' }}>
-                Enter as Seller
-              </Link>
+              <h3 style={{ marginBottom: 8, fontSize: 18 }}>Seller Portal</h3>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: 13.5, lineHeight: 1.6, marginBottom: 20 }}>
+                List your books, manage inventory, set pricing, and track your store's orders through a smart dashboard.
+              </p>
+              <Link to="/slogin" className="be-btn be-btn-navy" style={{
+                width: '100%', textDecoration: 'none', fontSize: 13,
+              }}>Enter as Seller</Link>
             </div>
 
-            {/* Admin portal card */}
-            <div className="glass-panel glass-card-hover p-8 flex flex-col justify-between group">
-              <div>
-                <div className="w-14 h-14 rounded-2xl bg-[#b24a3c]/10 flex items-center justify-center mb-6 border border-[#b24a3c]/20 group-hover:scale-110 transition-transform">
-                  <FiShield className="text-[#b24a3c] text-2xl" />
-                </div>
-                <h3 className="text-2xl font-bold font-serif mb-3 text-white">Admin Console</h3>
-                <p className="text-[#a69a8b] text-sm leading-relaxed mb-6">
-                  Moderate the marketplace, view system analytics, monitor all active users, sellers, and transactions.
-                </p>
+            {/* Admin */}
+            <div className="be-card" style={{ padding: 28 }}>
+              <div style={{
+                width: 46, height: 46,
+                borderRadius: 10,
+                background: 'rgba(186,26,26,0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: 16,
+              }}>
+                <FiShield size={22} color="#ba1a1a" />
               </div>
-              <Link to="/alogin" className="glass-button w-full text-center no-underline" style={{ backgroundImage: 'linear-gradient(135deg, #b24a3c 0%, #8d3429 100%)', color: '#f5efe4' }}>
-                Enter Console
-              </Link>
+              <h3 style={{ marginBottom: 8, fontSize: 18 }}>Admin Console</h3>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: 13.5, lineHeight: 1.6, marginBottom: 20 }}>
+                Moderate the marketplace, review platform analytics, and manage all users, sellers, and transactions.
+              </p>
+              <Link to="/alogin" className="be-btn be-btn-outline" style={{
+                width: '100%', textDecoration: 'none', fontSize: 13,
+              }}>Enter Console</Link>
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

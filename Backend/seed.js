@@ -39,12 +39,14 @@ async function seed() {
     const seller1 = await Seller.create({
       name: "Classic Books Vendor",
       email: "seller1@example.com",
-      password: "password123"
+      password: "password123",
+      isApproved: true
     });
     const seller2 = await Seller.create({
       name: "Modern Novels Bookstore",
       email: "seller2@example.com",
-      password: "password123"
+      password: "password123",
+      isApproved: true
     });
     console.log(`Sellers created: ${seller1.email}, ${seller2.email}`);
 
@@ -86,7 +88,9 @@ async function seed() {
       price: "450",
       itemImage: "uploads/classic.jpg",
       userId: seller1._id,
-      userName: seller1.name
+      userName: seller1.name,
+      stock: 12,
+      formats: ['Paperback', 'E-Book', 'Special Edition']
     });
 
     const book2 = await Book.create({
@@ -97,7 +101,9 @@ async function seed() {
       price: "350",
       itemImage: "uploads/dystopian.jpg",
       userId: seller1._id,
-      userName: seller1.name
+      userName: seller1.name,
+      stock: 8,
+      formats: ['Paperback', 'E-Book']
     });
 
     const book3 = await Book.create({
@@ -108,7 +114,9 @@ async function seed() {
       price: "600",
       itemImage: "uploads/fantasy.jpg",
       userId: seller2._id,
-      userName: seller2.name
+      userName: seller2.name,
+      stock: 5,
+      formats: ['Paperback', 'Special Edition']
     });
 
     const book4 = await Book.create({
@@ -119,7 +127,9 @@ async function seed() {
       price: "550",
       itemImage: "uploads/scifi.jpg",
       userId: seller2._id,
-      userName: seller2.name
+      userName: seller2.name,
+      stock: 15,
+      formats: ['Paperback', 'E-Book', 'Special Edition']
     });
 
     console.log("Mock books created successfully.");

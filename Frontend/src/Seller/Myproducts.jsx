@@ -1,152 +1,234 @@
 import React, { useState, useEffect } from 'react';
 import axios, { API_URL } from '../config/api';
+import { Link } from 'react-router-dom';
 import Snavbar from './Snavbar';
 import Footer from '../components/Footer';
-import { Link } from 'react-router-dom';
-import { FiTrash2, FiPlusCircle, FiBookOpen } from 'react-icons/fi';
+import { FiTrash2, FiEdit2, FiPlusCircle, FiBookOpen, FiSearch, FiFilter } from 'react-icons/fi';
 
 function Myproducts() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [items,    setItems]    = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [search,   setSearch]   = useState('');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      axios
-        .get(`/getitem/${user.id}`)
-        .then((response) => {
-          setItems(response.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching seller items: ', error);
-          setLoading(false);
-        });
+    if (user?.id) {
+      axios.get(`/getitem/${user.id}`)
+        .then((res) => { setItems(res.data); setLoading(false); })
+        .catch((err) => { console.error(err); setLoading(false); });
     } else {
       setLoading(false);
     }
   }, []);
 
   const deleteItem = async (Id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this book from your listing?");
-    if (!confirmDelete) return;
-
+    if (!window.confirm('Are you sure you want to delete this book?')) return;
     try {
       await axios.delete(`/itemdelete/${Id}`);
-      // Update state without full page reload
       setItems(items.filter((item) => item._id !== Id));
-      alert('Book deleted from catalog successfully');
-    } catch (error) {
-      console.error('Error deleting item: ', error);
-      alert('Failed to delete book.');
+    } catch (err) {
+      console.error(err);
     }
   };
 
+  const filtered = items.filter(item =>
+    item.title?.toLowerCase().includes(search.toLowerCase()) ||
+    item.author?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const stats = [
+    { label: 'Total Books',        value: items.length              },
+    { label: 'Active Listings',    value: items.length              },
+    { label: 'Low Stock',          value: items.filter(i => (i.stock || 0) < 5).length },
+    { label: 'Avg. Price',         value: items.length > 0
+        ? `$${(items.reduce((s, i) => s + parseFloat(i.price || 0), 0) / items.length).toFixed(0)}`
+        : '$0' },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#130f0e] text-[#f5efe4]">
+    <div className="be-sidebar-layout">
       <Snavbar />
-      
-      {/* Background glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#d4af37]/3 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="container mx-auto px-4 py-12 flex-1 relative z-10">
-        
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-12 animate-fade-in-up">
-          <div className="text-center sm:text-left">
-            <h2 className="text-4xl font-extrabold font-serif text-white tracking-tight">
-              My <span className="text-gradient">Book Catalog</span>
+      <div className="be-main-content">
+        {/* Topbar */}
+        <div className="be-main-topbar">
+          <div>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, color: 'var(--color-primary)', margin: 0 }}>
+              Inventory Management
             </h2>
-            <p className="text-[#a69a8b] mt-2">Manage the books you are offering in the store</p>
+            <p style={{ fontSize: 12.5, color: 'var(--color-text-muted)', margin: 0 }}>
+              Manage your book listings
+            </p>
           </div>
-          
-          <Link 
-            to="/addbook" 
-            className="glass-button flex items-center gap-2 py-2.5 no-underline"
-            style={{ backgroundImage: 'linear-gradient(135deg, #d4af37 0%, #aa8417 100%)', color: '#1a1311', boxShadow: '0 4px 14px 0 rgba(212, 175, 55, 0.2)' }}
-          >
-            <FiPlusCircle /> List New Book
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 animate-fade-in">
-            <div className="w-12 h-12 border-4 border-[#d4af37] border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-4 text-[#a69a8b] text-sm">Loading catalog...</p>
-          </div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-24 glass-panel max-w-xl mx-auto p-12 bg-[#211816]/20 animate-fade-in">
-            <FiBookOpen className="text-[#342724] text-6xl mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2 font-serif">No Books Listed</h3>
-            <p className="text-[#a69a8b] mb-6">You haven't listed any books for sale yet.</p>
-            <Link to="/addbook" className="glass-button no-underline inline-block" style={{ backgroundImage: 'linear-gradient(135deg, #d4af37 0%, #aa8417 100%)', color: '#1a1311' }}>
-              Add Your First Book
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 10 }}>
+            <Link to="/addbook" className="be-btn be-btn-primary" style={{ textDecoration: 'none', fontSize: 13, gap: 6 }}>
+              <FiPlusCircle size={14} /> Add New Book
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up">
-            {items.map((item) => (
-              <div 
-                key={item._id} 
-                className="glass-panel glass-card-hover group border border-[#342724] bg-[#211816]/30 overflow-hidden flex flex-col justify-between"
-              >
-                {/* Book Image */}
-                <div className="aspect-[3/4] overflow-hidden bg-[#0c0908] relative">
-                  <img
-                    src={`${API_URL}/${item.itemImage}`}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold tracking-wider text-[#d4af37] uppercase bg-[#150f0e]/90 rounded-full border border-[#d4af37]/20 backdrop-blur-sm">
-                    {item.genre}
-                  </span>
-                  
-                  {/* Absolute delete button hover */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => deleteItem(item._id)}
-                      className="w-9 h-9 rounded-lg bg-[#b24a3c] hover:bg-[#9e4337] border border-[#b24a3c] flex items-center justify-center text-white transition-colors shadow-lg animate-fade-in"
-                      title="Delete Listing"
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                </div>
+        </div>
 
-                {/* Details */}
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-bold font-serif text-white line-clamp-1 group-hover:text-[#d4af37] transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-[#a69a8b] text-xs mt-1">
-                      By <span className="text-[#f5efe4] font-medium">{item.author}</span>
-                    </p>
-                    <p className="text-[#a69a8b] text-xs mt-3 line-clamp-3 leading-relaxed">
-                      {item.description || 'No description provided.'}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-[#342724]">
-                    <span className="text-xl font-black font-serif text-[#d4af37]">
-                      ${item.price}
-                    </span>
-                    
-                    {/* View Detail Link */}
-                    <Link 
-                      to={`/book/${item._id}`}
-                      className="text-xs font-semibold text-[#a69a8b] hover:text-[#d4af37] transition-colors"
-                    >
-                      Details &rarr;
-                    </Link>
-                  </div>
-                </div>
+        <div className="be-main-content-inner">
+          {/* Stats */}
+          <div className="be-kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: 20 }}>
+            {stats.map(({ label, value }) => (
+              <div key={label} className="be-kpi-card">
+                <div className="be-kpi-label">{label}</div>
+                <div className="be-kpi-value">{value}</div>
               </div>
             ))}
           </div>
-        )}
+
+          {/* Toolbar */}
+          <div style={{
+            display: 'flex', gap: 12, alignItems: 'center',
+            marginBottom: 16,
+          }}>
+            <div style={{ position: 'relative', flex: 1, maxWidth: 340 }}>
+              <FiSearch style={{
+                position: 'absolute', left: 12, top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--color-text-muted)',
+              }} size={14} />
+              <input
+                type="text"
+                className="be-input"
+                placeholder="Search by title or author..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ paddingLeft: 36, fontSize: 13 }}
+              />
+            </div>
+            <button className="be-btn be-btn-outline" style={{ fontSize: 12, gap: 6 }}>
+              <FiFilter size={13} /> Filter
+            </button>
+            <span style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--color-text-muted)' }}>
+              {filtered.length} book{filtered.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* Content */}
+          {loading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
+              <div className="be-loading-spinner"></div>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{
+              textAlign: 'center', padding: 60,
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 14,
+            }}>
+              <FiBookOpen size={36} color="var(--color-border)" style={{ marginBottom: 14 }} />
+              <h3 style={{ marginBottom: 8 }}>{search ? 'No matches found' : 'No books listed yet'}</h3>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: 13.5, marginBottom: 20 }}>
+                {search ? 'Try a different search term.' : "Start building your catalog."}
+              </p>
+              {!search && (
+                <Link to="/addbook" className="be-btn be-btn-primary" style={{ textDecoration: 'none' }}>
+                  Add Your First Book
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="be-table-wrap">
+              <table className="be-table">
+                <thead>
+                  <tr>
+                    <th>Book</th>
+                    <th>Genre</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((item) => (
+                    <tr key={item._id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{
+                            width: 38, height: 50, borderRadius: 5, overflow: 'hidden',
+                            background: 'var(--color-surface-low)',
+                            border: '1px solid var(--color-border)', flexShrink: 0,
+                          }}>
+                            {item.itemImage && (
+                              <img
+                                src={`${API_URL}/${item.itemImage}`}
+                                alt={item.title}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <p style={{
+                              fontWeight: 600, fontSize: 13.5,
+                              color: 'var(--color-primary)',
+                              margin: 0, maxWidth: 200,
+                              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            }}>{item.title}</p>
+                            <p style={{ fontSize: 11.5, color: 'var(--color-text-muted)', margin: 0 }}>
+                              by {item.author}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="be-badge be-badge-navy" style={{ fontSize: 11 }}>
+                          {item.genre || 'General'}
+                        </span>
+                      </td>
+                      <td style={{ fontWeight: 700, color: 'var(--color-accent)', fontSize: 14 }}>
+                        ${parseFloat(item.price).toFixed(2)}
+                      </td>
+                      <td>
+                        <div>
+                          <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                            {item.stock ?? 'N/A'}
+                          </div>
+                          {item.stock !== undefined && (
+                            <div className="be-progress-bar" style={{ width: 60 }}>
+                              <div
+                                className={`be-progress-fill ${(item.stock || 0) > 10 ? 'green' : ''}`}
+                                style={{ width: `${Math.min(100, ((item.stock || 0) / 20) * 100)}%` }}
+                              ></div>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`be-badge ${(item.stock || 0) === 0 ? 'be-badge-red' : 'be-badge-green'}`}>
+                          {(item.stock || 0) === 0 ? 'Out of Stock' : 'Active'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <Link
+                            to={`/editbook/${item._id}`}
+                            className="be-btn be-btn-outline"
+                            style={{ padding: '5px 10px', fontSize: 12, gap: 4, textDecoration: 'none' }}
+                          >
+                            <FiEdit2 size={12} /> Edit
+                          </Link>
+                          <button
+                            onClick={() => deleteItem(item._id)}
+                            className="be-btn be-btn-danger"
+                            style={{ padding: '5px 10px', fontSize: 12 }}
+                          >
+                            <FiTrash2 size={12} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 }

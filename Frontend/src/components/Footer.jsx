@@ -1,34 +1,128 @@
 import React from 'react';
-import { FiPhone, FiMail } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiBookOpen, FiGlobe, FiShare2, FiMail } from 'react-icons/fi';
 
-const Footer = () => {
-  return (
-    <footer className="border-t border-slate-800 bg-slate-950/80 backdrop-blur-sm py-12 mt-auto text-slate-400">
-      <div className="container mx-auto px-4 flex flex-col items-center">
-        {/* Decorative divider */}
-        <div className="w-16 h-1 bg-indigo-500 rounded-full mb-8"></div>
-        
-        <p className="italic text-center text-slate-300 max-w-xl text-lg font-light leading-relaxed mb-6">
-          "Embark on a literary journey with our book haven – where every page turns into an adventure!"
-        </p>
-
-        <div className="flex flex-wrap justify-center gap-6 mb-8 text-sm">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800">
-            <FiPhone className="text-indigo-400" />
-            <span>Call Us: 127-865-586-67</span>
+const Footer = () => (
+  <footer style={{
+    background: 'var(--color-bg)',
+    borderTop: '1px solid var(--color-border)',
+    padding: '40px 32px 24px',
+    marginTop: 'auto',
+  }}>
+    <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr repeat(3, auto)',
+        gap: '32px 48px',
+        marginBottom: 28,
+      }}>
+        {/* Brand */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <FiBookOpen size={18} color="var(--color-primary)" />
+            <span style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: 17,
+              fontWeight: 700,
+              color: 'var(--color-primary)',
+            }}>BookEase</span>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800">
-            <FiMail className="text-indigo-400" />
-            <span>support@bookhaven.com</span>
+          <p style={{ fontSize: 12.5, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 220, marginBottom: 14 }}>
+            © 2024 BookEase. All rights reserved. Curating literary journeys for the digital age through a blend of heritage and innovation.
+          </p>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {[FiGlobe, FiShare2, FiMail].map((Icon, i) => (
+              <button key={i} style={{
+                width: 30, height: 30,
+                border: '1px solid var(--color-border)',
+                borderRadius: 6,
+                background: 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'var(--color-text-muted)',
+                transition: 'all 0.15s',
+              }}>
+                <Icon size={13} />
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="text-center text-xs text-slate-500 border-t border-slate-900 pt-6 w-full max-w-2xl">
-          Copyright &copy; {new Date().getFullYear()} BookHaven. All Rights Reserved.
+        {/* Navigation */}
+        <div>
+          <h6 style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: 'var(--color-text)',
+            marginBottom: 12,
+            fontFamily: 'var(--font-sans)',
+          }}>Navigation</h6>
+          {['Fiction', 'Non-Fiction', 'Rare Books', 'Stationery'].map((item) => (
+            <div key={item} style={{ marginBottom: 7 }}>
+              <Link to="/uproducts" style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none', transition: 'color 0.15s' }}
+                onMouseOver={(e) => e.target.style.color = 'var(--color-primary)'}
+                onMouseOut={(e)  => e.target.style.color = 'var(--color-text-muted)'}
+              >{item}</Link>
+            </div>
+          ))}
+        </div>
+
+        {/* Support */}
+        <div>
+          <h6 style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: 'var(--color-text)',
+            marginBottom: 12,
+            fontFamily: 'var(--font-sans)',
+          }}>Support</h6>
+          {['About Us', 'Contact', 'Help Center', 'Shipping Policy'].map((item) => (
+            <div key={item} style={{ marginBottom: 7 }}>
+              <a href="#" style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none' }}
+                onMouseOver={(e) => e.target.style.color = 'var(--color-primary)'}
+                onMouseOut={(e)  => e.target.style.color = 'var(--color-text-muted)'}
+              >{item}</a>
+            </div>
+          ))}
+        </div>
+
+        {/* Legal */}
+        <div>
+          <h6 style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: 'var(--color-text)',
+            marginBottom: 12,
+            fontFamily: 'var(--font-sans)',
+          }}>Legal</h6>
+          {['Returns', 'Privacy Policy'].map((item) => (
+            <div key={item} style={{ marginBottom: 7 }}>
+              <a href="#" style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none' }}
+                onMouseOver={(e) => e.target.style.color = 'var(--color-primary)'}
+                onMouseOut={(e)  => e.target.style.color = 'var(--color-text-muted)'}
+              >{item}</a>
+            </div>
+          ))}
         </div>
       </div>
-    </footer>
-  );
-};
+
+      <div style={{
+        borderTop: '1px solid var(--color-border)',
+        paddingTop: 16,
+        textAlign: 'center',
+        fontSize: 11.5,
+        color: 'var(--color-text-muted)',
+      }}>
+        Designed with intention for the modern reader.
+      </div>
+    </div>
+  </footer>
+);
 
 export default Footer;

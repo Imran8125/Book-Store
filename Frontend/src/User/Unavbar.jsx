@@ -1,13 +1,31 @@
-import React from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiBookOpen, FiHome, FiHeart, FiShoppingBag, FiLogOut, FiUser } from 'react-icons/fi';
+import {
+  FiBookOpen, FiSearch, FiUser, FiShoppingCart,
+  FiHeart, FiLogOut, FiMenu, FiX, FiPackage
+} from 'react-icons/fi';
 
 const Unavbar = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const userData = localStorage.getItem('user');
-  const user = userData ? JSON.parse(userData) : { name: 'Reader' };
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const userData  = localStorage.getItem('user');
+  const user      = userData ? JSON.parse(userData) : { name: 'Reader' };
+
+  const [cartCount, setCartCount] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchVal, setSearchVal]   = useState('');
+
+  const updateCartCount = () => {
+    const cart  = JSON.parse(localStorage.getItem('cart')) || [];
+    const count = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
+    setCartCount(count);
+  };
+
+  useEffect(() => {
+    updateCartCount();
+    window.addEventListener('storage', updateCartCount);
+    return () => window.removeEventListener('storage', updateCartCount);
+  }, []);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -17,66 +35,113 @@ const Unavbar = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  const categories = ['Fiction', 'Non-Fiction', 'Children', 'Rare Books', 'Stationery'];
+
   return (
-    <Navbar expand="lg" className="border-b border-[#342724] bg-[#1a1311]/80 backdrop-blur-md sticky top-0 z-50 py-3">
-      <Container>
-        <Navbar.Brand as={Link} to="/uhome" className="flex items-center gap-2 font-serif text-2xl font-bold tracking-tight text-white">
-          <FiBookOpen className="text-[#d4af37] text-3xl animate-pulse" />
-          <span>Book<span className="text-gradient">Haven</span></span>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="user-navbar-nav" className="border-[#342724] bg-[#211816]" />
-        <Navbar.Collapse id="user-navbar-nav">
-          <Nav className="ms-auto flex gap-3 items-center mt-3 lg:mt-0">
-            <Link 
-              to="/uhome" 
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive('/uhome') ? 'text-[#d4af37] bg-[#d4af37]/10' : 'text-[#a69a8b] hover:text-[#f5efe4] hover:bg-[#342724]/50'
-              }`}
-            >
-              <FiHome /> Home
+    <>
+      <nav className="be-navbar">
+        <div className="be-navbar-inner">
+          {/* Brand */}
+          <Link to="/uhome" className="be-navbar-brand" style={{ textDecoration: 'none' }}>
+            <FiBookOpen size={20} />
+            BookEase
+          </Link>
+
+          {/* Category links */}
+          <ul className="be-navbar-links">
+            {categories.map((cat) => (
+              <li key={cat}>
+                <Link
+                  to="/uproducts"
+                  className={`be-navbar-link ${isActive('/uproducts') && cat === 'Fiction' ? 'active' : ''}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  {cat}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {/* Search */}
+          <div className="be-navbar-search">
+            <FiSearch size={14} />
+            <input
+              type="text"
+              placeholder="Search titles, authors..."
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchVal.trim()) navigate('/uproducts');
+              }}
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="be-navbar-actions">
+            {/* User */}
+            <Link to="/profile" className="be-navbar-icon-btn" title={user.name} style={{ textDecoration: 'none' }}>
+              <FiUser size={17} />
             </Link>
-            <Link 
-              to="/uproducts" 
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive('/uproducts') ? 'text-[#d4af37] bg-[#d4af37]/10' : 'text-[#a69a8b] hover:text-[#f5efe4] hover:bg-[#342724]/50'
-              }`}
-            >
-              <FiBookOpen /> Books
+
+            {/* Wishlist */}
+            <Link to="/wishlist" className="be-navbar-icon-btn" title="Wishlist" style={{ textDecoration: 'none' }}>
+              <FiHeart size={17} />
             </Link>
-            <Link 
-              to="/wishlist" 
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive('/wishlist') ? 'text-[#d4af37] bg-[#d4af37]/10' : 'text-[#a69a8b] hover:text-[#f5efe4] hover:bg-[#342724]/50'
-              }`}
-            >
-              <FiHeart /> Wishlist
+
+            {/* Orders */}
+            <Link to="/myorders" className="be-navbar-icon-btn" title="My Orders" style={{ textDecoration: 'none' }}>
+              <FiPackage size={17} />
             </Link>
-            <Link 
-              to="/myorders" 
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive('/myorders') ? 'text-[#d4af37] bg-[#d4af37]/10' : 'text-[#a69a8b] hover:text-[#f5efe4] hover:bg-[#342724]/50'
-              }`}
-            >
-              <FiShoppingBag /> My Orders
+
+            {/* Cart */}
+            <Link to="/cart" className="be-navbar-icon-btn" title="Cart" style={{ textDecoration: 'none' }}>
+              <FiShoppingCart size={17} />
+              {cartCount > 0 && <span className="be-cart-badge">{cartCount}</span>}
             </Link>
- 
-            {/* User display */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#d4af37]/5 border border-[#d4af37]/20 text-[#d4af37] text-xs font-semibold uppercase tracking-wider">
-              <FiUser className="text-[#d4af37]" />
-              <span>{user.name}</span>
-            </div>
- 
+
             {/* Logout */}
-            <button 
+            <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-[#b24a3c] hover:text-[#c95344] hover:bg-[#b24a3c]/10"
+              className="be-navbar-icon-btn"
+              title="Sign Out"
+              style={{ color: 'rgba(255,255,255,0.55)' }}
             >
-              <FiLogOut /> Logout
+              <FiLogOut size={17} />
             </button>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+
+            {/* Mobile toggle */}
+            <button
+              className="be-navbar-icon-btn"
+              style={{ display: 'none' }}
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <FiX size={19} /> : <FiMenu size={19} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer */}
+      {mobileOpen && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 199,
+          background: 'rgba(0,0,0,0.4)',
+        }} onClick={() => setMobileOpen(false)}>
+          <div style={{
+            position: 'absolute', top: 0, left: 0, bottom: 0, width: 260,
+            background: 'var(--color-primary)', padding: '20px 16px',
+          }} onClick={(e) => e.stopPropagation()}>
+            <Link to="/uhome"   className="be-navbar-link" style={{ display: 'block', padding: '10px 0', color: '#fff' }} onClick={() => setMobileOpen(false)}>Home</Link>
+            <Link to="/uproducts" className="be-navbar-link" style={{ display: 'block', padding: '10px 0', color: '#fff' }} onClick={() => setMobileOpen(false)}>Books</Link>
+            <Link to="/wishlist"  className="be-navbar-link" style={{ display: 'block', padding: '10px 0', color: '#fff' }} onClick={() => setMobileOpen(false)}>Wishlist</Link>
+            <Link to="/cart"      className="be-navbar-link" style={{ display: 'block', padding: '10px 0', color: '#fff' }} onClick={() => setMobileOpen(false)}>Cart {cartCount > 0 && `(${cartCount})`}</Link>
+            <Link to="/myorders"  className="be-navbar-link" style={{ display: 'block', padding: '10px 0', color: '#fff' }} onClick={() => setMobileOpen(false)}>My Orders</Link>
+            <Link to="/profile"   className="be-navbar-link" style={{ display: 'block', padding: '10px 0', color: '#fff' }} onClick={() => setMobileOpen(false)}>Profile</Link>
+            <button onClick={handleLogout} className="be-navbar-link" style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 0', color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none' }}>Sign Out</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

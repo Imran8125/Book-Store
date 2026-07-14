@@ -115,3 +115,20 @@ exports.getOrders = async (req, res) => {
         return res.sendStatus(500);
     }
 };
+
+// Approve Seller
+exports.approveSeller = async (req, res) => {
+    const { id } = req.params;
+    const { isApproved } = req.body;
+    try {
+        const seller = await Seller.findById(id);
+        if (!seller) {
+            return res.status(404).json({ error: 'Seller not found' });
+        }
+        seller.isApproved = isApproved;
+        await seller.save();
+        return res.status(200).json(seller);
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};

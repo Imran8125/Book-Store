@@ -28,6 +28,14 @@ const bookSchema = new mongoose.Schema({
     },
     userName: {
         type: String
+    },
+    stock: {
+        type: Number,
+        default: 5
+    },
+    formats: {
+        type: [String],
+        default: ['Paperback', 'E-Book']
     }
 });
 

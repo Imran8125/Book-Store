@@ -1,126 +1,166 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from '../config/api';
-import Home from '../components/Home';
-import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
+import { FiBookOpen, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+
+/* Library-themed image (public domain bookshelf) */
+const SHELF_IMG = 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=900&q=80&auto=format&fit=crop';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    let payload = { email, password };
-    axios
-      .post("/login", payload)
+    setLoading(true);
+    axios.post('/login', { email, password })
       .then((res) => {
-        if (res.data.Status === "Success") {
+        setLoading(false);
+        if (res.data.Status === 'Success') {
           localStorage.setItem('user', JSON.stringify(res.data.user));
           navigate('/uhome');
         } else {
-          setError("Wrong credentials. Please check your email and password.");
+          setError('Wrong credentials. Please check your email and password.');
         }
       })
-      .catch((err) => {
-        console.error(err);
-        setError("Connection error. The backend server might be offline.");
+      .catch(() => {
+        setLoading(false);
+        setError('Connection error. The backend server might be offline.');
       });
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#130f0e]">
-      <Home />
-      <div className="flex-1 flex items-center justify-center px-4 py-12 relative overflow-hidden">
-        {/* Decorative background glows */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-[#d4af37]/3 rounded-full blur-[80px] pointer-events-none"></div>
-
-        <div className="glass-panel w-full max-w-md p-8 relative z-10 animate-fade-in-up border-[#342724]">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-extrabold font-serif text-white tracking-tight">
-              Reader Portal
-            </h2>
-            <p className="text-[#a69a8b] text-sm mt-2">
-              Sign in to manage your library, orders, and wishlist
-            </p>
+    <div className="be-auth-layout">
+      {/* Left panel — bookshelf image */}
+      <div className="be-auth-left">
+        <img src={SHELF_IMG} alt="Bookshelf" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div className="be-auth-left-overlay">
+          <div style={{
+            position: 'absolute', top: 28, left: 32,
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontFamily: 'var(--font-serif)',
+            fontSize: 18, fontWeight: 700, color: '#ffffff',
+          }}>
+            <FiBookOpen size={20} /> BookEase
           </div>
+          <blockquote className="be-auth-quote">
+            "Reading is a conversation. All books speak. But a good book also listens."
+          </blockquote>
+          <p className="be-auth-quote-attr">Francis Bacon</p>
+        </div>
+      </div>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* Error Message Banner */}
-            {error && (
-              <div className="p-3.5 rounded-xl text-xs font-semibold bg-[#b24a3c]/10 border border-[#b24a3c]/20 text-[#b24a3c] animate-fade-in">
-                {error}
-              </div>
-            )}
+      {/* Right panel — form */}
+      <div className="be-auth-right">
+        <div className="be-auth-form-wrap animate-fade-in-up">
 
-            {/* Email Input */}
-            <div className="space-y-1">
-              <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#a69a8b]">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a69a8b]">
-                  <FiMail />
-                </div>
+          <h1 style={{ fontSize: 30, marginBottom: 6 }}>Welcome Back</h1>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: 14.5, marginBottom: 32 }}>
+            Continue your literary journey where you left off.
+          </p>
+
+          {error && (
+            <div className="be-alert be-alert-error animate-fade-in" style={{ marginBottom: 20 }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            {/* Email */}
+            <div style={{ marginBottom: 18 }}>
+              <label className="be-label" htmlFor="login-email">Email Address</label>
+              <div className="be-input-icon-wrap">
+                <span className="be-input-icon"><FiMail size={14} /></span>
                 <input
-                  id="email"
-                  name="email"
+                  id="login-email"
                   type="email"
-                  autoComplete="email"
-                  required
+                  className="be-input"
+                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="glass-input w-full pl-10 placeholder-[#342724] text-sm focus:outline-none"
-                  placeholder="name@example.com"
+                  required
+                  autoComplete="email"
                 />
               </div>
             </div>
 
-            {/* Password Input */}
-            <div className="space-y-1">
-              <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-[#a69a8b]">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a69a8b]">
-                  <FiLock />
-                </div>
+            {/* Password */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label className="be-label" htmlFor="login-password" style={{ margin: 0 }}>Password</label>
+                <a href="#" style={{ fontSize: 12.5, color: 'var(--color-text-muted)', textDecoration: 'none' }}
+                  onMouseOver={(e) => e.target.style.color = 'var(--color-primary)'}
+                  onMouseOut={(e) => e.target.style.color = 'var(--color-text-muted)'}
+                >Forgot password?</a>
+              </div>
+              <div className="be-input-icon-wrap">
+                <span className="be-input-icon"><FiLock size={14} /></span>
                 <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
+                  id="login-password"
+                  type={showPass ? 'text' : 'password'}
+                  className="be-input"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="glass-input w-full pl-10 placeholder-[#342724] text-sm focus:outline-none"
-                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                  style={{ paddingLeft: 40, paddingRight: 40 }}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(!showPass)}
+                  style={{
+                    position: 'absolute', right: 12, top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none', border: 'none',
+                    color: 'var(--color-text-muted)', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center',
+                  }}
+                >
+                  {showPass ? <FiEyeOff size={14} /> : <FiEye size={14} />}
+                </button>
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Remember me */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+              <input
+                type="checkbox"
+                id="remember"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                style={{ width: 15, height: 15, accentColor: 'var(--color-primary)', cursor: 'pointer' }}
+              />
+              <label htmlFor="remember" style={{ fontSize: 13, color: 'var(--color-text-muted)', cursor: 'pointer' }}>
+                Remember me for 30 days
+              </label>
+            </div>
+
             <button
               type="submit"
-              className="glass-button w-full flex items-center justify-center gap-2 mt-6 py-2.5"
+              className="be-btn be-btn-primary"
+              disabled={loading}
+              style={{ width: '100%', padding: '13px', fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase' }}
             >
-              <FiLogIn /> Sign In
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
-          <div className="mt-8 text-center border-t border-[#342724] pt-6">
-            <p className="text-sm text-[#a69a8b]">
-              Don't have an account?{' '}
-              <Link
-                to="/signup"
-                className="text-[#d4af37] hover:text-[#e5c048] font-semibold hover:underline transition-colors ml-1"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
+
+          <p style={{ textAlign: 'center', fontSize: 13.5, color: 'var(--color-text-muted)' }}>
+            New to BookEase?{' '}
+            <Link to="/signup" style={{
+              color: 'var(--color-primary)',
+              fontWeight: 700,
+              textDecoration: 'none',
+            }}>Create an account</Link>
+          </p>
         </div>
       </div>
     </div>

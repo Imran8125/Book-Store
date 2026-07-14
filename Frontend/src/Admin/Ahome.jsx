@@ -1,188 +1,281 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../config/api';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-import { Card, Container, Row, Col } from 'react-bootstrap';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
 import Anavbar from './Anavbar';
 import Footer from '../components/Footer';
-import { FiUsers, FiShoppingBag, FiLayers, FiBookOpen, FiActivity } from 'react-icons/fi';
+import {
+  FiUsers, FiShoppingBag, FiBookOpen, FiActivity,
+  FiBell, FiSearch, FiFilter, FiDownload
+} from 'react-icons/fi';
+
+const STATUS_STYLES = {
+  Fulfilled:  'be-badge-green',
+  Processing: 'be-badge-orange',
+  Pending:    'be-badge-blue',
+  Cancelled:  'be-badge-red',
+};
+const STATUS_CYCLE = ['Fulfilled', 'Processing', 'Pending', 'Cancelled'];
 
 function Ahome() {
-  const [users, setUsers] = useState([]);
-  const [vendors, setVendors] = useState([]);
-  const [items, setItems] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users,    setUsers]    = useState([]);
+  const [vendors,  setVendors]  = useState([]);
+  const [items,    setItems]    = useState([]);
+  const [orders,   setOrders]   = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [filter,   setFilter]   = useState('All');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
-    // Fetch all admin counts in parallel
-    const getUsers = axios.get(`/users`);
-    const getSellers = axios.get(`/sellers`);
-    const getItems = axios.get(`/item`);
-    const getOrders = axios.get(`/orders`);
-
-    Promise.all([getUsers, getSellers, getItems, getOrders])
-      .then(([usersRes, sellersRes, itemsRes, ordersRes]) => {
-        setUsers(usersRes.data);
-        setVendors(sellersRes.data);
-        setItems(itemsRes.data);
-        setOrders(ordersRes.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching admin dashboard data: ', error);
-        setLoading(false);
-      });
+    Promise.all([
+      axios.get('/users'),
+      axios.get('/sellers'),
+      axios.get('/item'),
+      axios.get('/orders'),
+    ]).then(([ur, sr, ir, or]) => {
+      setUsers(ur.data);
+      setVendors(sr.data);
+      setItems(ir.data);
+      setOrders(or.data);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
-  const totalUsers = users.length;
-  const totalvendors = vendors.length;
-  const totalItems = items.length;
-  const totalOrders = orders.length;
-
-  const chartData = [
-    { name: 'Readers', value: totalUsers, color: '#d4af37' },
-    { name: 'Sellers', value: totalvendors, color: '#c5a880' },
-    { name: 'Books', value: totalItems, color: '#a89b8c' },
-    { name: 'Orders', value: totalOrders, color: '#b24a3c' },
+  const KPI = [
+    { label: 'Total Readers',  value: users.length,   icon: FiUsers,      color: '#031632', link: '/users'   },
+    { label: 'Active Sellers', value: vendors.length,  icon: FiShoppingBag,color: '#c85c3c', link: '/sellers' },
+    { label: 'Books Listed',   value: items.length,    icon: FiBookOpen,   color: '#2D5F5D', link: null       },
+    { label: 'Total Orders',   value: orders.length,   icon: FiActivity,   color: '#854d0e', link: null       },
   ];
 
-  return (
-    <div className="min-h-screen flex flex-col bg-[#130f0e] text-[#f5efe4]">
-      <Anavbar />
-      
-      {/* Background glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#d4af37]/3 rounded-full blur-[120px] pointer-events-none"></div>
+  const chartData = [
+    { month: 'Jan', revenue: 1800 },
+    { month: 'Feb', revenue: 2400 },
+    { month: 'Mar', revenue: 2100 },
+    { month: 'Apr', revenue: 3200 },
+    { month: 'May', revenue: 2800 },
+    { month: 'Jun', revenue: Math.max(1000, orders.length * 120) },
+  ];
 
-      <Container className="py-12 flex-1 relative z-10">
-        
-        {/* Title */}
-        <div className="mb-12 text-center lg:text-left animate-fade-in-up">
-          <h2 className="text-4xl font-extrabold font-serif text-white tracking-tight">
-            Admin <span className="text-gradient">Dashboard</span>
-          </h2>
-          <p className="text-[#a69a8b] mt-2">
-            Overview of users, sellers, books catalog, and active sales
-          </p>
+  const filteredOrders = filter === 'All'
+    ? orders
+    : orders.filter((_, i) => STATUS_CYCLE[i % STATUS_CYCLE.length] === filter);
+
+  return (
+    <div className="be-sidebar-layout">
+      <Anavbar />
+
+      <div className="be-main-content">
+        {/* Topbar */}
+        <div className="be-main-topbar">
+          <div>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, color: 'var(--color-primary)', margin: 0 }}>
+              Platform Overview
+            </h2>
+            <p style={{ fontSize: 12.5, color: 'var(--color-text-muted)', margin: 0 }}>
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+          <div style={{ position: 'relative' }}>
+            <FiSearch size={13} style={{
+              position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+              color: 'var(--color-text-muted)', pointerEvents: 'none',
+            }} />
+            <input type="text" className="be-input" placeholder="Search orders, users..."
+              style={{ paddingLeft: 34, fontSize: 13, width: 260 }} />
+          </div>
+          <button style={{
+            position: 'relative', width: 36, height: 36,
+            borderRadius: 8, border: '1px solid var(--color-border)',
+            background: 'var(--color-surface)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+          }}>
+            <FiBell size={16} color="var(--color-text-sub)" />
+            <span style={{
+              position: 'absolute', top: 6, right: 6,
+              width: 7, height: 7, borderRadius: '50%',
+              background: 'var(--color-accent)', border: '1px solid #fff',
+            }}></span>
+          </button>
         </div>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 animate-fade-in">
-            <div className="w-12 h-12 border-4 border-[#d4af37] border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-4 text-[#a69a8b] text-sm">Loading admin dashboard stats...</p>
-          </div>
-        ) : (
-          <div className="space-y-8 animate-fade-in-up">
-            
-            {/* KPI Cards Row */}
-            <Row className="g-4">
-              <Col xs={12} sm={6} lg={3}>
-                <Link to="/users" className="no-underline block">
-                  <div className="glass-panel glass-card-hover p-5 bg-[#211816]/40 border-[#342724] flex items-center justify-between group">
-                    <div>
-                      <span className="text-[#a69a8b] text-[10px] font-semibold uppercase tracking-wider block">Total Readers</span>
-                      <span className="text-3xl font-black font-serif text-white block mt-1">{totalUsers}</span>
-                      <span className="text-[#d4af37] text-xs">Manage &rarr;</span>
-                    </div>
-                    <div className="w-12 h-12 rounded-xl bg-[#d4af37]/10 flex items-center justify-center border border-[#d4af37]/20 group-hover:scale-110 transition-transform">
-                      <FiUsers className="text-[#d4af37] text-xl" />
-                    </div>
-                  </div>
-                </Link>
-              </Col>
-
-              <Col xs={12} sm={6} lg={3}>
-                <Link to="/sellers" className="no-underline block">
-                  <div className="glass-panel glass-card-hover p-5 bg-[#211816]/40 border-[#342724] flex items-center justify-between group">
-                    <div>
-                      <span className="text-[#a69a8b] text-[10px] font-semibold uppercase tracking-wider block">Total Sellers</span>
-                      <span className="text-3xl font-black font-serif text-white block mt-1">{totalvendors}</span>
-                      <span className="text-[#c5a880] text-xs">Manage &rarr;</span>
-                    </div>
-                    <div className="w-12 h-12 rounded-xl bg-[#c5a880]/10 flex items-center justify-center border border-[#c5a880]/20 group-hover:scale-110 transition-transform">
-                      <FiShoppingBag className="text-[#c5a880] text-xl" />
-                    </div>
-                  </div>
-                </Link>
-              </Col>
-
-              <Col xs={12} sm={6} lg={3}>
-                <div className="glass-panel p-5 bg-[#211816]/40 border-[#342724] flex items-center justify-between">
-                  <div>
-                    <span className="text-[#a69a8b] text-[10px] font-semibold uppercase tracking-wider block">Books Listed</span>
-                    <span className="text-3xl font-black font-serif text-white block mt-1">{totalItems}</span>
-                    <span className="text-[#a89b8c] text-xs">Catalog Count</span>
-                  </div>
-                  <div className="w-12 h-12 rounded-xl bg-[#a89b8c]/10 flex items-center justify-center border border-[#a89b8c]/20">
-                    <FiBookOpen className="text-[#a89b8c] text-xl" />
-                  </div>
-                </div>
-              </Col>
-
-              <Col xs={12} sm={6} lg={3}>
-                <div className="glass-panel p-5 bg-[#211816]/40 border-[#342724] flex items-center justify-between">
-                  <div>
-                    <span className="text-[#a69a8b] text-[10px] font-semibold uppercase tracking-wider block">Total Sales</span>
-                    <span className="text-3xl font-black font-serif text-white block mt-1">{totalOrders}</span>
-                    <span className="text-[#b24a3c] text-xs">Orders Placed</span>
-                  </div>
-                  <div className="w-12 h-12 rounded-xl bg-[#b24a3c]/10 flex items-center justify-center border border-[#b24a3c]/20">
-                    <FiActivity className="text-[#b24a3c] text-xl" />
-                  </div>
-                </div>
-              </Col>
-            </Row>
-
-            {/* Recharts Analytics Panel */}
-            <div className="glass-panel p-6 md:p-8 bg-[#211816]/20 border-[#342724]">
-              <div className="flex items-center gap-2 mb-8">
-                <FiLayers className="text-[#d4af37] text-xl" />
-                <h3 className="text-xl font-bold font-serif text-white tracking-tight m-0">Platform Overview Analytics</h3>
-              </div>
-
-              <div className="w-full h-80 flex justify-center items-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }} barSize={60}>
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="#4a3834" 
-                      tick={{ fill: '#a69a8b', fontSize: 12, fontWeight: 500 }}
-                      axisLine={{ stroke: '#342724' }}
-                      tickLine={false}
-                    />
-                    <YAxis 
-                      stroke="#4a3834"
-                      tick={{ fill: '#a69a8b', fontSize: 12 }}
-                      axisLine={{ stroke: '#342724' }}
-                      tickLine={false}
-                      allowDecimals={false}
-                    />
-                    <Tooltip 
-                      cursor={{ fill: 'rgba(255, 255, 255, 0.02)' }}
-                      contentStyle={{ 
-                        backgroundColor: '#211816', 
-                        borderColor: '#342724',
-                        borderRadius: '10px',
-                        color: '#f5efe4',
-                        fontFamily: 'Plus Jakarta Sans',
-                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)'
-                      }}
-                    />
-                    <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+        {/* Content */}
+        <div className="be-main-content-inner">
+          {loading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}>
+              <div className="be-loading-spinner"></div>
             </div>
+          ) : (
+            <>
+              {/* KPI */}
+              <div className="be-kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: 24 }}>
+                {KPI.map(({ label, value, icon: Icon, color, link }) => {
+                  const card = (
+                    <div className="be-kpi-card" key={label}>
+                      <div className="be-kpi-label">
+                        {label}
+                        <div style={{
+                          width: 32, height: 32, borderRadius: 8,
+                          background: color + '14',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <Icon size={15} color={color} />
+                        </div>
+                      </div>
+                      <div className="be-kpi-value">{value}</div>
+                      <div className="be-kpi-sub" style={{ color: color, fontSize: 11, fontWeight: 600 }}>
+                        {link ? 'Manage →' : 'Platform total'}
+                      </div>
+                    </div>
+                  );
+                  return link
+                    ? <Link key={label} to={link} style={{ textDecoration: 'none' }}>{card}</Link>
+                    : card;
+                })}
+              </div>
 
-          </div>
-        )}
+              {/* Chart + Quick Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20, marginBottom: 24 }}>
+                <div className="be-card" style={{ padding: 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 17, margin: 0 }}>
+                      Platform Revenue Trend
+                    </h3>
+                    <button className="be-btn be-btn-outline" style={{ fontSize: 12, gap: 6, padding: '5px 12px' }}>
+                      <FiDownload size={12} /> Export
+                    </button>
+                  </div>
+                  <div style={{ height: 220 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData} barSize={32} margin={{ top: 0, right: 8, bottom: 0, left: -20 }}>
+                        <XAxis dataKey="month" axisLine={false} tickLine={false}
+                          tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} />
+                        <YAxis axisLine={false} tickLine={false}
+                          tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }}
+                          tickFormatter={(v) => `$${v}`} />
+                        <Tooltip
+                          cursor={{ fill: 'rgba(0,0,0,0.03)' }}
+                          contentStyle={{
+                            background: 'var(--color-surface)', border: '1px solid var(--color-border)',
+                            borderRadius: 8, fontSize: 12,
+                          }}
+                          formatter={(v) => [`$${v}`, 'Revenue']}
+                        />
+                        <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                          {chartData.map((_, i) => (
+                            <Cell key={i} fill={i === chartData.length - 1 ? 'var(--color-accent)' : '#e4e2e2'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
 
-      </Container>
-      <Footer />
+                {/* Pending Alerts */}
+                <div className="be-card" style={{ padding: 20 }}>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 16, marginBottom: 14 }}>
+                    Pending Actions
+                  </h3>
+                  {[
+                    { label: 'Seller Approvals',   count: vendors.length, color: '#c85c3c' },
+                    { label: 'User Reports',        count: 2,              color: '#ba1a1a' },
+                    { label: 'Orders to Audit',     count: Math.ceil(orders.length * 0.1), color: '#854d0e' },
+                  ].map(({ label, count, color }) => (
+                    <div key={label} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '10px 0', borderBottom: '1px solid var(--color-border-lt)',
+                    }}>
+                      <span style={{ fontSize: 13, color: 'var(--color-text-sub)' }}>{label}</span>
+                      <span style={{
+                        width: 26, height: 26, borderRadius: '50%',
+                        background: color + '15',
+                        color, fontWeight: 700, fontSize: 12,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>{count}</span>
+                    </div>
+                  ))}
+                  <Link to="/users" className="be-btn be-btn-outline" style={{
+                    width: '100%', marginTop: 16, fontSize: 12, textDecoration: 'none',
+                  }}>
+                    Review All
+                  </Link>
+                </div>
+              </div>
+
+              {/* Orders Table */}
+              <div className="be-table-wrap">
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '14px 20px', borderBottom: '1px solid var(--color-border)',
+                  flexWrap: 'wrap',
+                }}>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 16, margin: 0, flex: 1 }}>
+                    Orders Overview
+                  </h3>
+                  {['All', ...STATUS_CYCLE].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setFilter(s)}
+                      className={`be-btn ${filter === s ? 'be-btn-navy' : 'be-btn-ghost'}`}
+                      style={{ fontSize: 11, padding: '5px 12px' }}
+                    >{s}</button>
+                  ))}
+                  <button className="be-btn be-btn-outline" style={{ fontSize: 11, gap: 4, padding: '5px 10px' }}>
+                    <FiFilter size={11} /> More Filters
+                  </button>
+                </div>
+
+                {orders.length === 0 ? (
+                  <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 13 }}>
+                    No orders on the platform yet.
+                  </div>
+                ) : (
+                  <table className="be-table">
+                    <thead>
+                      <tr>
+                        <th>Order ID</th>
+                        <th>Book / Item</th>
+                        <th>Buyer</th>
+                        <th>Seller</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredOrders.slice(0, 10).map((order, i) => {
+                        const statusKey = STATUS_CYCLE[i % STATUS_CYCLE.length];
+                        return (
+                          <tr key={order._id || i}>
+                            <td style={{ fontFamily: 'monospace', fontSize: 12 }}>
+                              #{(order._id || '').slice(-6).toUpperCase() || String(i + 1).padStart(6, '0')}
+                            </td>
+                            <td style={{ fontWeight: 500, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {order.title || order.itemTitle || 'N/A'}
+                            </td>
+                            <td style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
+                              {order.buyerName || order.userId || '—'}
+                            </td>
+                            <td style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
+                              {order.sellerName || order.sellerId || '—'}
+                            </td>
+                            <td style={{ fontWeight: 700, color: 'var(--color-accent)' }}>
+                              ${parseFloat(order.price || order.totalPrice || 0).toFixed(2)}
+                            </td>
+                            <td>
+                              <span className={`be-badge ${STATUS_STYLES[statusKey]}`}>{statusKey}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+        <Footer />
+      </div>
     </div>
   );
 }

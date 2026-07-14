@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios, { API_URL } from '../config/api';
-import { Card, Badge, Container } from 'react-bootstrap';
+import { Card, Badge } from 'react-bootstrap';
 import Snavbar from './Snavbar';
 import Footer from '../components/Footer';
 import { FiShoppingBag, FiTruck, FiCheckCircle, FiUser, FiHome } from 'react-icons/fi';
@@ -26,10 +26,15 @@ function Orders() {
     }
   }, []);
 
-  const calculateStatus = (deliveryDateStr) => {
-    const currentDate = new Date();
-    const formattedDeliveryDate = new Date(deliveryDateStr);
-    return formattedDeliveryDate >= currentDate ? "On the Way" : "Delivered";
+  const updateStatus = async (orderId, newStatus) => {
+    try {
+      await axios.put(`/orderstatus/${orderId}`, { status: newStatus });
+      setOrders(orders.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
+      alert('Order status updated successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update order status');
+    }
   };
 
   return (
@@ -47,7 +52,7 @@ function Orders() {
             Received <span className="text-gradient">Orders</span>
           </h2>
           <p className="text-[#a69a8b] mt-2">
-            Track customer purchases, billing totals, and shipping status
+            Track customer purchases, billing totals, and update shipment tracking status
           </p>
         </div>
 
@@ -65,7 +70,7 @@ function Orders() {
         ) : (
           <div className="space-y-6 max-w-4xl mx-auto animate-fade-in-up">
             {orders.map((item) => {
-              const status = calculateStatus(item.Delivery);
+              const displayStatus = item.status || "Pending";
               return (
                 <Card 
                   key={item._id} 
@@ -88,14 +93,18 @@ function Orders() {
                         <h3 className="text-base font-bold text-white truncate m-0 font-serif">
                           {item.booktitle}
                         </h3>
-                        <Badge bg={status === "Delivered" ? "success" : "warning"} className="text-[10px] uppercase px-2.5 py-1">
-                          {status === "Delivered" ? <FiCheckCircle className="inline mr-1" /> : <FiTruck className="inline mr-1" />}
-                          {status}
+                        <Badge bg={displayStatus === "Delivered" ? "success" : displayStatus === "Shipped" ? "info" : "warning"} className="text-[10px] uppercase px-2.5 py-1">
+                          {displayStatus === "Delivered" ? <FiCheckCircle className="inline mr-1" /> : <FiTruck className="inline mr-1" />}
+                          {displayStatus}
                         </Badge>
                       </div>
 
                       <p className="text-[#a69a8b] text-xs">
                         Author: <span className="text-[#f5efe4] font-medium">{item.bookauthor || 'N/A'}</span> | Genre: <span className="text-[#d4af37] font-medium uppercase">{item.bookgenre || 'N/A'}</span>
+                      </p>
+
+                      <p className="text-[#a69a8b] text-xs">
+                        Format: <span className="text-[#f5efe4] font-semibold">{item.format || 'Paperback'}</span> | Qty: <span className="text-[#f5efe4] font-semibold">{item.quantity || 1}</span>
                       </p>
 
                       <div className="flex items-center justify-center md:justify-start gap-1.5 text-[#f5efe4] text-xs">
@@ -119,11 +128,27 @@ function Orders() {
                       <p>{item.state}</p>
                     </div>
 
-                    {/* Dates & Billing */}
-                    <div className="text-center md:text-right border-t md:border-t-0 md:border-l border-[#342724] pt-4 md:pt-0 md:pl-6 flex-shrink-0">
-                      <span className="font-semibold text-[#a69a8b] block uppercase tracking-wider text-[10px]">Earnings</span>
-                      <span className="text-2xl font-black font-serif text-[#d4af37] block">${item.totalamount}</span>
-                      <span className="text-[10px] text-[#a69a8b] block">Est: {item.Delivery}</span>
+                    {/* Dates & Billing & Fulfill Status */}
+                    <div className="text-center md:text-right border-t md:border-t-0 md:border-l border-[#342724] pt-4 md:pt-0 md:pl-6 flex-shrink-0 space-y-3">
+                      <div>
+                        <span className="font-semibold text-[#a69a8b] block uppercase tracking-wider text-[10px]">Earnings</span>
+                        <span className="text-2xl font-black font-serif text-[#d4af37] block">${item.totalamount}</span>
+                        <span className="text-[10px] text-[#a69a8b] block">Est: {item.Delivery}</span>
+                      </div>
+
+                      <div className="inline-block text-left">
+                        <span className="text-[9px] text-[#a69a8b] uppercase tracking-wider block">Fulfillment</span>
+                        <select
+                          value={item.status || 'Pending'}
+                          onChange={(e) => updateStatus(item._id, e.target.value)}
+                          className="glass-input text-[11px] py-1 px-2.5 bg-[#150f0e] border-[#342724] text-[#f5efe4] mt-1"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </div>
                     </div>
 
                   </div>

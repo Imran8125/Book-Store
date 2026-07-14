@@ -14,6 +14,7 @@ router.delete('/useritemdelete/:id', adminController.deleteUserItem);
 
 // Seller Management
 router.get('/sellers', adminController.getSellers);
+router.put('/sellerapprove/:id', adminController.approveSeller);
 router.delete('/sellerdelete/:id', adminController.deleteSeller);
 
 // Order Management

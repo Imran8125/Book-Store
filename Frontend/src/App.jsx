@@ -24,7 +24,10 @@ import Users from './Admin/Users';
 import Vendors from './Admin/Seller';
 import Seller from './Admin/Seller';
 import Wishlist from './User/Wishlist';
-// import './App.css'
+import Cart from './User/Cart';
+import Profile from './User/Profile';
+import Editbook from './Seller/Editbook';
+import Sprofile from './Seller/Sprofile';
 
 function App() {
   return (
@@ -45,24 +48,28 @@ function App() {
 
 
            {/* seller */}
-        <Route path='/slogin' element={<Slogin/>} />
+      <Route path='/slogin' element={<Slogin/>} />
       <Route path='/ssignup' element={<Ssignup/>} />
-       <Route path='/shome' element={<Shome/>} />
-       <Route path='/myproducts' element={<Myproducts/>} />
-       <Route path='/addbook' element={<Addbook/>} />
-       <Route path='/book/:id' element={<Book/>} />
-       <Route path='/orders' element={<Orders/>} />
+      <Route path='/shome' element={<Shome/>} />
+      <Route path='/myproducts' element={<Myproducts/>} />
+      <Route path='/addbook' element={<Addbook/>} />
+      <Route path='/editbook/:id' element={<Editbook/>} />
+      <Route path='/book/:id' element={<Book/>} />
+      <Route path='/orders' element={<Orders/>} />
+      <Route path='/sprofile' element={<Sprofile/>} />
 
       {/* user */}
       <Route path='/login' element={<Login/>}/>
       <Route path='/signup' element={<Signup/>} />
-        <Route path='/nav' element={<Unavbar/>}/>
-         <Route path='/uhome' element={<Uhome/>} />
-         <Route path='/uproducts' element={<Products/>} />
-       <Route path='/uitem/:id' element={<Uitem/>} />
-       <Route path="/orderitem/:id" element={<OrderItem/>} />
-       <Route path="/myorders" element={<Myorders />} />
-       <Route path="/wishlist" element={<Wishlist />} />
+      <Route path='/nav' element={<Unavbar/>}/>
+      <Route path='/uhome' element={<Uhome/>} />
+      <Route path='/uproducts' element={<Products/>} />
+      <Route path='/uitem/:id' element={<Uitem/>} />
+      <Route path="/orderitem/:id" element={<OrderItem/>} />
+      <Route path="/myorders" element={<Myorders />} />
+      <Route path="/wishlist" element={<Wishlist />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/profile" element={<Profile />} />
 
        </Routes>
        </BrowserRouter>
