@@ -4,6 +4,12 @@ BookEase is a full-stack online marketplace built using the MERN (MongoDB, Expre
 
 ---
 
+## Demo Link
+
+* [Demo](https://drive.google.com/file/d/1b87Ve04_jNn7uJ5jZcU0yjocfj7Lz-4x/view?usp=drive_link)
+
+---
+
 ## 📂 Project Phase Documents
 
 All development stages and milestones are documented in the [Phase Wise Documents](Phase%20Wise%20Documents) folder. Below are links to the individual deliverables for each phase:
